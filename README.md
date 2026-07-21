@@ -58,7 +58,7 @@ supabase/
   migrations/          # Database migrations (RLS, policies, tables, functions)
 ```
 
-## Routes
+## Routes 
 
 | Path | Purpose |
 | --- | --- |
