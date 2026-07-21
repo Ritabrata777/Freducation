@@ -1,0 +1,8 @@
+{
+  "framework": "tanstack-start",
+  "build": {
+    "env": {
+      "NITRO_PRESET": "vercel"
+    }
+  }
+}
