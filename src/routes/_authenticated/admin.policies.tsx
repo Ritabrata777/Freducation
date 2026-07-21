@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/Skeleton";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listReports, dismissReport, setMaterialStatus, adminDeleteMaterial, listModerationLog, listAutoFlagQueue, listAutoFlagStats, listAppeals, resolveAppeal } from "@/lib/admin.functions";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { DEFAULT_AUTO_FLAG_CONFIG, type AutoFlagConfig } from "@/lib/auto-flag";

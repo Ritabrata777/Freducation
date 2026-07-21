@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Icon } from "@/components/Icon";
 import { Skeleton } from "@/components/Skeleton";
 import { TopNav } from "@/components/TopNav";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { z } from "zod";
 
 export const Route = createFileRoute("/_authenticated/requests")({

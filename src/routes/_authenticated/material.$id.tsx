@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Icon } from "@/components/Icon";
 import { Skeleton } from "@/components/Skeleton";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { ProgressControls } from "@/components/ProgressControls";
 import { MaterialComments } from "@/components/MaterialComments";
 

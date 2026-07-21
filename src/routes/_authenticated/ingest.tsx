@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { useServerFn } from "@tanstack/react-start";
 import { Icon } from "@/components/Icon";
 import { TopNav } from "@/components/TopNav";
