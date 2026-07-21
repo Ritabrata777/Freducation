@@ -1,12 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Icon } from "@/components/Icon";
 import { Skeleton } from "@/components/Skeleton";
 import { toast } from "@/lib/toast";
 import { ProgressControls } from "@/components/ProgressControls";
 import { MaterialComments } from "@/components/MaterialComments";
+import { getMaterialSignedUrl } from "@/lib/material.functions";
 
 export const Route = createFileRoute("/_authenticated/material/$id")({
   head: () => ({
@@ -89,6 +91,7 @@ function MaterialPage() {
   const [urlLoading, setUrlLoading] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
   const [textBody, setTextBody] = useState<string | null>(null);
+  const getSignedUrl = useServerFn(getMaterialSignedUrl);
 
   const materialQ = useQuery({
     queryKey: ["material", id],
@@ -149,16 +152,16 @@ function MaterialPage() {
         if (active) setUrlLoading(false);
         return;
       }
-      const { data, error } = await supabase.storage
-        .from("materials")
-        .createSignedUrl(material.file_url, 60 * 30);
-      if (!active) return;
-      if (error || !data?.signedUrl) {
-        toast.error("Couldn't load file", { description: error?.message ?? "File unavailable." });
-        setUrlLoading(false);
-        return;
-      }
-      setSignedUrl(data.signedUrl);
+        try {
+          const url = await getSignedUrl({ data: { file_url: material.file_url } });
+          if (!active) return;
+          setSignedUrl(url);
+        } catch (error) {
+          if (!active) return;
+          toast.error("Couldn't load file", {
+            description: error instanceof Error ? error.message : "File unavailable.",
+          });
+        }
       setUrlLoading(false);
     })();
     return () => {
