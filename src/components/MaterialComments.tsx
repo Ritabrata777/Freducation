@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Icon } from "@/components/Icon";
 import { Skeleton } from "@/components/Skeleton";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 type Kind = "comment" | "question" | "answer";
 

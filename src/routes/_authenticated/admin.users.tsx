@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/Skeleton";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listUsersAdmin, setUserRole, adminDeleteUser } from "@/lib/admin.functions";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 

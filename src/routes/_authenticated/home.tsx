@@ -11,7 +11,7 @@ import { useRecommendations } from "@/hooks/use-recommendations";
 import { ProgressControls } from "@/components/ProgressControls";
 import { exportPageViewsCsv } from "@/lib/admin.functions";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({

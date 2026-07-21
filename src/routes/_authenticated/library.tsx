@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { adminDeleteMaterial, setMaterialStatus } from "@/lib/admin.functions";
 import { ProgressControls } from "@/components/ProgressControls";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 
 export const Route = createFileRoute("/_authenticated/library")({
