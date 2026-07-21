@@ -21,41 +21,72 @@ Respond ONLY with JSON matching:
 - language: e.g. "English"
 - tags: 3-6 short lowercase kebab-case tags`;
 
+const DEFAULT_GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta";
+
+function resolveApiKey(): string {
+  const apiKey = process.env.GEMINI_API_KEY ?? process.env.AI_API_KEY;
+  if (!apiKey?.trim()) {
+    throw new Error("Gemini API key not configured (set GEMINI_API_KEY or AI_API_KEY in .env)");
+  }
+  return apiKey.trim();
+}
+
+function resolveGeminiBaseUrl(): string {
+  const configured = process.env.AI_GATEWAY_URL?.trim();
+  if (!configured) return DEFAULT_GEMINI_URL;
+  try {
+    const url = new URL(configured);
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      throw new Error("unsupported protocol");
+    }
+    return configured.replace(/\/+$/, "");
+  } catch {
+    throw new Error(
+      "AI_GATEWAY_URL must be a full Gemini API base URL (e.g. https://generativelanguage.googleapis.com/v1beta). " +
+        "Put your API key in GEMINI_API_KEY or AI_API_KEY, not AI_GATEWAY_URL.",
+    );
+  }
+}
+
+function parseDataUrl(dataUrl: string): { mimeType: string; data: string } | null {
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) return null;
+  return { mimeType: match[1], data: match[2] };
+}
+
 export const aiAutofillMetadata = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: Input) => data)
   .handler(async ({ data }) => {
-    const apiKey = process.env.AI_API_KEY;
-    if (!apiKey) throw new Error("AI API key not configured (set AI_API_KEY)");
-    const apiUrl =
-      process.env.AI_GATEWAY_URL ?? "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+    const apiKey = resolveApiKey();
+    const baseUrl = resolveGeminiBaseUrl();
     const model = process.env.AI_MODEL ?? "gemini-2.0-flash";
 
-    const userContent: Array<Record<string, unknown>> = [
+    const parts: Array<Record<string, unknown>> = [
       {
-        type: "text",
         text: `Filename: ${data.filename}\nMIME: ${data.mimeType}\n${
           data.textSample ? `\nContent sample:\n"""${data.textSample.slice(0, 8000)}"""` : ""
         }`,
       },
     ];
+
     if (data.imageDataUrl) {
-      userContent.push({ type: "image_url", image_url: { url: data.imageDataUrl } });
+      const image = parseDataUrl(data.imageDataUrl);
+      if (image) {
+        parts.push({ inline_data: { mime_type: image.mimeType, data: image.data } });
+      }
     }
 
-    const res = await fetch(apiUrl, {
+    const res = await fetch(`${baseUrl}/models/${model}:generateContent`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        "x-goog-api-key": apiKey,
       },
       body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: SYSTEM },
-          { role: "user", content: userContent },
-        ],
-        response_format: { type: "json_object" },
+        systemInstruction: { parts: [{ text: SYSTEM }] },
+        contents: [{ role: "user", parts }],
+        generationConfig: { responseMimeType: "application/json" },
       }),
     });
 
@@ -67,7 +98,7 @@ export const aiAutofillMetadata = createServerFn({ method: "POST" })
     }
 
     const json = await res.json();
-    const raw = json?.choices?.[0]?.message?.content ?? "{}";
+    const raw = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}";
     let parsed: Record<string, unknown> = {};
     try {
       parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
