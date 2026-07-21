@@ -1,0 +1,586 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Freducation design system — ported from the mockups' Tailwind config.
+ * Material 3–inspired semantic tokens.
+ */
+
+@theme {
+  /* Fonts */
+  --font-body-md: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body-lg: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-headline-md: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-headline-lg: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-display-xl: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-label-sm: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono-code: "Geist", ui-monospace, monospace;
+
+  /* Typography scale */
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--font-weight: 400;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--font-weight: 400;
+
+  --text-label-sm: 13px;
+  --text-label-sm--line-height: 1;
+  --text-label-sm--letter-spacing: 0.05em;
+  --text-label-sm--font-weight: 500;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 1.3;
+  --text-headline-md--font-weight: 600;
+
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 1.2;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 600;
+
+  --text-display-xl: 64px;
+  --text-display-xl--line-height: 1.1;
+  --text-display-xl--letter-spacing: -0.04em;
+  --text-display-xl--font-weight: 700;
+
+  --text-mono-code: 14px;
+  --text-mono-code--line-height: 1.5;
+  --text-mono-code--font-weight: 400;
+
+  /* Spacing tokens */
+  --spacing-unit: 8px;
+  --spacing-gutter: 24px;
+  --spacing-margin: 40px;
+  --spacing-bento-radius: 12px;
+
+  /* Container max width */
+  --container-container-max: 1440px;
+
+  /* Border radius (mockup overrides) */
+  --radius-DEFAULT: 0.125rem;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.75rem;
+  --radius-full: 0.75rem;
+  --radius-bento-radius: 12px;
+
+  /* Dark grayscale palette */
+  --color-surface-container-highest: #434343;
+  --color-on-error: #ffffff;
+  --color-on-tertiary-fixed: #eaeaea;
+  --color-on-tertiary: #ffffff;
+  --color-secondary-container: #262626;
+  --color-outline-variant: #434343;
+  --color-surface: #1a1a1a;
+  --color-on-background: #ffffff;
+  --color-surface-container-low: #1f1f1f;
+  --color-primary-container: #434343;
+  --color-on-surface-variant: #bebebe;
+  --color-on-secondary-fixed-variant: #d4d4d4;
+  --color-inverse-surface: #eaeaea;
+  --color-on-tertiary-container: #eaeaea;
+  --color-tertiary-fixed: #434343;
+  --color-background: #111111;
+  --color-surface-dim: #111111;
+  --color-on-tertiary-fixed-variant: #d4d4d4;
+  --color-secondary-fixed-dim: #5e5e5e;
+  --color-on-secondary-fixed: #ffffff;
+  --color-secondary-fixed: #262626;
+  --color-surface-tint: #ffffff;
+  --color-on-secondary: #ffffff;
+  --color-surface-container-lowest: #111111;
+  --color-tertiary: #eaeaea;
+  --color-on-primary: #111111;
+  --color-primary-fixed: #eaeaea;
+  --color-on-primary-fixed-variant: #d4d4d4;
+  --color-inverse-on-surface: #111111;
+  --color-error: #fb4268;
+  --color-on-primary-fixed: #111111;
+  --color-outline: #777777;
+  --color-primary-fixed-dim: #d4d4d4;
+  --color-surface-bright: #262626;
+  --color-primary: #ffffff;
+  --color-surface-container-high: #2b2b2b;
+  --color-error-container: #3b0f18;
+  --color-on-surface: #ffffff;
+  --color-tertiary-fixed-dim: #bebebe;
+  --color-on-error-container: #fecdd3;
+  --color-surface-variant: #262626;
+  --color-on-primary-container: #ffffff;
+  --color-inverse-primary: #111111;
+  --color-surface-container: #262626;
+  --color-tertiary-container: #434343;
+  --color-secondary: #a7a7a7;
+  --color-on-secondary-container: #eaeaea;
+
+  /* Compat tokens for shadcn primitives */
+  --color-foreground: #ffffff;
+  --color-card: #1a1a1a;
+  --color-card-foreground: #ffffff;
+  --color-popover: #1a1a1a;
+  --color-popover-foreground: #ffffff;
+  --color-muted: #262626;
+  --color-muted-foreground: #bebebe;
+  --color-accent: #262626;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #fb4268;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #434343;
+  --color-input: #434343;
+  --color-ring: #ffffff;
+  --color-primary-foreground: #111111;
+  --color-secondary-foreground: #111111;
+}
+
+@utility glass-card {
+  background-color: rgba(26, 26, 26, 0.55);
+  backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+}
+
+@utility bento-card {
+  background-color: rgba(26, 26, 26, 0.55);
+  backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+}
+
+@utility surface-glass {
+  background-color: rgba(26, 26, 26, 0.45);
+  backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@utility input-glass {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined", sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-outline-variant);
+  }
+  html, body {
+    background-color: #111111;
+    color: #ffffff;
+    min-height: 100%;
+  }
+  body {
+    background-image: radial-gradient(
+      var(--bg-gradient-shape) at var(--bg-gradient-origin),
+      var(--bg-gradient-stop-1) 0%,
+      var(--bg-gradient-stop-2) 20%,
+      var(--bg-gradient-stop-3) 45%,
+      var(--bg-gradient-stop-4) 75%,
+      var(--bg-gradient-stop-5) 100%
+    );
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+  }
+  /* Subtle animated aurora overlay — drifts slowly behind all content */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -20%;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 35% at 20% 30%, var(--aurora-blob-1) 0%, transparent 60%),
+      radial-gradient(45% 40% at 80% 20%, var(--aurora-blob-2) 0%, transparent 65%),
+      radial-gradient(50% 45% at 60% 80%, var(--aurora-blob-3) 0%, transparent 65%);
+    filter: blur(var(--aurora-blur));
+    animation: aurora-drift var(--aurora-duration) ease-in-out infinite alternate;
+    will-change: transform, opacity;
+  }
+}
+
+@keyframes aurora-drift {
+  0%   { transform: translate3d(0%, 0%, 0) scale(1);     opacity: 0.85; }
+  50%  { transform: translate3d(3%, -2%, 0) scale(1.08); opacity: 1; }
+  100% { transform: translate3d(-3%, 2%, 0) scale(1.04); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+}
+
+/* Explicit user override — set via the Settings toggle. Takes precedence
+   over prefers-reduced-motion so users can opt into or out of motion. */
+html[data-motion="off"] body::before {
+  animation: none;
+}
+html[data-motion="on"] body::before {
+  animation: aurora-drift var(--aurora-duration) ease-in-out infinite alternate;
+}
+
+
+
+/* ==========================================================================
+   Central theme tokens — tweak gradient + glass + button values from here.
+   ========================================================================== */
+:root {
+  /* Page background gradient */
+  --bg-gradient-shape: ellipse 140% 120%;
+  --bg-gradient-origin: 50% 0%;
+  --bg-gradient-stop-1: #5a5a5a;
+  --bg-gradient-stop-2: #3d3d3d;
+  --bg-gradient-stop-3: #262626;
+  --bg-gradient-stop-4: #1a1a1a;
+  --bg-gradient-stop-5: #111111;
+
+  /* Aurora drift overlay */
+  --aurora-blob-1: rgba(120, 120, 140, 0.22);
+  --aurora-blob-2: rgba(90, 90, 105, 0.18);
+  --aurora-blob-3: rgba(70, 70, 85, 0.20);
+  --aurora-blur: 40px;
+  --aurora-duration: 28s;
+
+  /* Liquid glass header */
+  --lg-bg-color: rgba(255, 255, 255, 0.25);
+  --lg-highlight: rgba(255, 255, 255, 0.75);
+  --lg-text: #ffffff;
+  --lg-hover-glow: rgba(255, 255, 255, 0.4);
+
+  /* Liquid glass buttons */
+  --btn-text: #ffffff;
+  --btn-radius-blur: 6px;
+  --btn-radius-saturate: 140%;
+
+  --btn-ring-shadow:
+    inset 2px 2px 0 -2px rgba(255, 255, 255, 0.75),
+    inset 0 0 3px 1px rgba(255, 255, 255, 0.7),
+    0 6px 18px -8px rgba(0, 0, 0, 0.55);
+  --btn-ring-shadow-hover-primary:
+    inset 2px 2px 0 -2px rgba(255, 255, 255, 0.95),
+    inset 0 0 5px 1px rgba(255, 255, 255, 0.85),
+    0 10px 26px -10px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(255, 255, 255, 0.18);
+  --btn-ring-shadow-hover-secondary:
+    inset 2px 2px 0 -2px rgba(255, 255, 255, 0.9),
+    inset 0 0 5px 1px rgba(255, 255, 255, 0.75),
+    0 10px 26px -10px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(255, 255, 255, 0.12);
+
+  --btn-primary-tint: rgba(255, 255, 255, 0.22);
+  --btn-primary-tint-hover: rgba(255, 255, 255, 0.32);
+  --btn-secondary-tint: rgba(255, 255, 255, 0.08);
+  --btn-secondary-tint-hover: rgba(255, 255, 255, 0.16);
+
+  --btn-lift-y: -1px;
+  --btn-press-scale: 0.98;
+  --btn-press-brightness: 0.92;
+  --btn-disabled-opacity: 0.55;
+
+  /* ---- Centralized glass surface + text tokens ----
+     Every component should pull glass/text color from here rather than
+     hardcoding bg-white/10, border-white/20, text-white/70, etc. */
+  --glass-surface-muted:    rgba(255, 255, 255, 0.05);
+  --glass-surface:          rgba(255, 255, 255, 0.10);
+  --glass-surface-strong:   rgba(255, 255, 255, 0.18);
+  --glass-input:            rgba(0, 0, 0, 0.40);
+  --glass-input-strong:     rgba(0, 0, 0, 0.55);
+  --glass-overlay:          rgba(0, 0, 0, 0.75);
+
+  --glass-border-subtle:    rgba(255, 255, 255, 0.12);
+  --glass-border:           rgba(255, 255, 255, 0.20);
+  --glass-border-strong:    rgba(255, 255, 255, 0.30);
+
+  --text-primary:           #ffffff;
+  --text-secondary:         rgba(255, 255, 255, 0.78);
+  --text-muted:             rgba(255, 255, 255, 0.60);
+  --text-subtle:            rgba(255, 255, 255, 0.45);
+
+  /* Keyboard focus ring — shared across nav, buttons, inputs, dropdowns */
+  --focus-ring-color:       #ffffff;
+  --focus-ring-width:       2px;
+  --focus-ring-offset:      2px;
+  --focus-ring-glow:        0 0 0 4px rgba(255, 255, 255, 0.22);
+}
+
+/* ==========================================================================
+   Global keyboard focus states
+   Only applied for :focus-visible so mouse clicks stay clean, while every
+   keyboard-reachable control (links, buttons, inputs, selects, textareas,
+   role=button, tabindex targets, Radix triggers) shows a clear ring.
+   ========================================================================== */
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  [role="combobox"],
+  [tabindex]:not([tabindex="-1"])
+):focus {
+  outline: none;
+}
+
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  [role="combobox"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: var(--focus-ring-glow);
+  border-radius: inherit;
+}
+
+/* Text inputs, selects, textareas — inset ring reads better than an outer
+   outline against tightly packed form layouts */
+:where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea
+):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width) var(--focus-ring-color),
+    var(--focus-ring-glow);
+  border-color: var(--focus-ring-color);
+}
+
+/* Liquid-glass buttons paint their ring on ::before, so route the focus
+   glow through the pseudo-element to preserve the glass look */
+button.bg-primary:focus-visible,
+a.bg-primary:focus-visible,
+[type="submit"].bg-primary:focus-visible,
+button.border-outline-variant:focus-visible,
+a.border-outline-variant:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-glow);
+}
+
+/* Top nav pills / search — subtle offset so the ring clears the glass edge */
+.lg-header a:focus-visible,
+.lg-header button:focus-visible {
+  outline-offset: 3px;
+}
+
+
+/* Expose the tokens as Tailwind color utilities so components can use
+   bg-glass-surface, border-glass-border, text-text-secondary, etc. */
+@theme inline {
+  --color-glass-surface-muted:  var(--glass-surface-muted);
+  --color-glass-surface:        var(--glass-surface);
+  --color-glass-surface-strong: var(--glass-surface-strong);
+  --color-glass-input:          var(--glass-input);
+  --color-glass-input-strong:   var(--glass-input-strong);
+  --color-glass-overlay:        var(--glass-overlay);
+
+  --color-glass-border-subtle:  var(--glass-border-subtle);
+  --color-glass-border:         var(--glass-border);
+  --color-glass-border-strong:  var(--glass-border-strong);
+
+  --color-text-primary:         var(--text-primary);
+  --color-text-secondary:       var(--text-secondary);
+  --color-text-muted:           var(--text-muted);
+  --color-text-subtle:          var(--text-subtle);
+}
+
+
+
+.lg-header {
+  position: relative;
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+  background: transparent;
+}
+.lg-filter {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  backdrop-filter: blur(4px);
+  filter: url(#lg-dist);
+  isolation: isolate;
+  pointer-events: none;
+}
+.lg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--lg-bg-color);
+  pointer-events: none;
+}
+.lg-specular {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow: inset 1px 1px 0 var(--lg-highlight), inset 0 0 5px var(--lg-highlight);
+  pointer-events: none;
+}
+.lg-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 1.5rem;
+}
+
+/* ========== Liquid glass buttons (macOS glass, all buttons) ========== */
+button.bg-primary,
+a.bg-primary,
+[type="submit"].bg-primary,
+button.border-outline-variant,
+a.border-outline-variant {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  background: transparent !important;
+  border: none !important;
+  color: var(--btn-text) !important;
+  z-index: 0;
+  transition:
+    transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.6),
+    filter 0.25s ease;
+}
+
+/* Inner highlight ring — the glass edge */
+button.bg-primary::before,
+a.bg-primary::before,
+[type="submit"].bg-primary::before,
+button.border-outline-variant::before,
+a.border-outline-variant::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  overflow: hidden;
+  box-shadow: var(--btn-ring-shadow);
+  transition:
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+  pointer-events: none;
+}
+
+/* Displacement / blur pane — the refractive glass body */
+button.bg-primary::after,
+a.bg-primary::after,
+[type="submit"].bg-primary::after,
+button.border-outline-variant::after,
+a.border-outline-variant::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  backdrop-filter: blur(var(--btn-radius-blur)) saturate(var(--btn-radius-saturate));
+  filter: url(#btn-glass);
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+/* Primary variant tint */
+button.bg-primary::before,
+a.bg-primary::before,
+[type="submit"].bg-primary::before {
+  background-color: var(--btn-primary-tint);
+}
+
+/* Secondary variant tint */
+button.border-outline-variant::before,
+a.border-outline-variant::before {
+  background-color: var(--btn-secondary-tint);
+}
+
+/* Hover — lift + brighten */
+button.bg-primary:hover,
+a.bg-primary:hover,
+[type="submit"].bg-primary:hover,
+button.border-outline-variant:hover,
+a.border-outline-variant:hover {
+  transform: translateY(var(--btn-lift-y));
+}
+button.bg-primary:hover::before,
+a.bg-primary:hover::before,
+[type="submit"].bg-primary:hover::before {
+  background-color: var(--btn-primary-tint-hover);
+  box-shadow: var(--btn-ring-shadow-hover-primary);
+}
+button.border-outline-variant:hover::before,
+a.border-outline-variant:hover::before {
+  background-color: var(--btn-secondary-tint-hover);
+  box-shadow: var(--btn-ring-shadow-hover-secondary);
+}
+
+/* Active — press in */
+button.bg-primary:active,
+a.bg-primary:active,
+[type="submit"].bg-primary:active,
+button.border-outline-variant:active,
+a.border-outline-variant:active {
+  transform: translateY(0) scale(var(--btn-press-scale));
+  filter: brightness(var(--btn-press-brightness));
+}
+
+button.bg-primary:disabled,
+[type="submit"].bg-primary:disabled,
+button.border-outline-variant:disabled {
+  transform: none;
+  filter: grayscale(0.4);
+  opacity: var(--btn-disabled-opacity);
+}
+
+
+
