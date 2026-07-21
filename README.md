@@ -97,7 +97,7 @@ GEMINI_API_KEY=
 3. Run the development server
 
 ```bash
-bun dev
+npm run dev
 ```
 
 ## Code Conventions
