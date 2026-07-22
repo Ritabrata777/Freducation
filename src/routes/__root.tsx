@@ -120,11 +120,11 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
-        {/* Apply saved motion preference before first paint to avoid an
-            aurora flash on load. Mirrors the logic in use-motion-pref. */}
+        {/* Apply saved UI preferences before first paint to avoid visual flash.
+            Mirrors the logic in use-motion-pref and use-ui-prefs. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var v=localStorage.getItem('freducation:motion-pref');if(v==='on'||v==='off'){document.documentElement.setAttribute('data-motion',v);}}catch(e){}`,
+            __html: `try{var h=document.documentElement;var v=localStorage.getItem('freducation:motion-pref');if(v==='on'||v==='off'){h.setAttribute('data-motion',v);}var raw=localStorage.getItem('settings.prefs.v1');if(raw){var p=JSON.parse(raw);if(p&&p.compact===true){h.setAttribute('data-density','compact');}if(p&&p.highContrast===true){h.setAttribute('data-contrast','high');}}}catch(e){}`,
           }}
         />
       </head>
@@ -140,7 +140,7 @@ function RootShell({ children }: { children: ReactNode }) {
           </defs>
         </svg>
         {children}
-        <Toaster richColors position="top-right" closeButton />
+        <Toaster richColors position="top-right" closeButton theme="dark" />
         <Scripts />
       </body>
     </html>

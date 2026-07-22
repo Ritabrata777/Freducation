@@ -244,6 +244,34 @@ html[data-motion="on"] body::before {
   animation: aurora-drift var(--aurora-duration) ease-in-out infinite alternate;
 }
 
+html[data-contrast="high"] {
+  --color-secondary: #f2f2f2;
+  --color-on-surface-variant: #f2f2f2;
+  --color-muted-foreground: #ededed;
+  --text-secondary: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.34);
+  --glass-border-strong: rgba(255, 255, 255, 0.48);
+}
+
+html[data-contrast="high"] body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html[data-contrast="high"] .text-secondary,
+html[data-contrast="high"] .text-on-surface-variant,
+html[data-contrast="high"] .text-muted-foreground {
+  color: var(--text-secondary) !important;
+}
+
+html[data-density="compact"] table :is(th, td) {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+html[data-density="compact"] .bento-card {
+  backdrop-filter: blur(14px) saturate(150%);
+}
 
 
 /* ==========================================================================
@@ -582,5 +610,60 @@ button.border-outline-variant:disabled {
   opacity: var(--btn-disabled-opacity);
 }
 
+/* ==========================================================================
+   Settings — Unified Toggle Switches
+   ========================================================================== */
+.settings-toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 9999px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+  cursor: pointer;
+  border: 1px solid var(--glass-border);
+  background-color: rgba(255, 255, 255, 0.08);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+.settings-toggle--on {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.settings-toggle__thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background-color: var(--color-secondary);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease;
+  will-change: transform;
+  transform: translateX(0);
+}
+.settings-toggle__thumb--on {
+  background-color: #ffffff;
+  transform: translateX(20px);
+}
+.settings-toggle:hover {
+  border-color: var(--glass-border-strong);
+}
+.settings-toggle--on:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(255, 255, 255, 0.85);
+}
 
-
+/* ==========================================================================
+   Settings — Select / Dropdown dark-theme option styling
+   ========================================================================== */
+.settings-select {
+  color-scheme: dark;
+}
+.settings-option {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+.settings-option:hover,
+.settings-option:checked {
+  background-color: #2b2b2b;
+}

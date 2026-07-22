@@ -6,6 +6,7 @@ import { Icon } from "@/components/Icon";
 import { TopNav } from "@/components/TopNav";
 import { useAuth } from "@/hooks/use-auth";
 import { useMotionPref } from "@/hooks/use-motion-pref";
+import { DEFAULT_UI_PREFS, useUiPrefs } from "@/hooks/use-ui-prefs";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteOwnAccount, type DeletionReport } from "@/lib/admin.functions";
 
@@ -53,77 +54,40 @@ function SettingsPage() {
   const LANGUAGE_OPTIONS = ["English (US - Technical)", "English (UK)", "German (DE)"] as const;
   const DATA_REGION_OPTIONS = ["North America (US-East-1)", "Europe (EU-Central)", "Asia Pacific (AP-South)"] as const;
   const DEFAULTS = {
-    language: LANGUAGE_OPTIONS[0],
-    dataRegion: DATA_REGION_OPTIONS[0],
-    compact: true,
-    highContrast: false,
+    ...DEFAULT_UI_PREFS,
     motion: "system" as const,
   };
 
-  const STORAGE_KEY = "settings.prefs.v1";
-  type StoredPrefs = { language: string; dataRegion: string; compact: boolean; highContrast: boolean };
-  const readStored = (): Partial<StoredPrefs> => {
-    if (typeof window === "undefined") return {};
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as Partial<StoredPrefs>) : {};
-    } catch {
-      return {};
-    }
-  };
-
-  const [language, setLanguage] = useState<string>(DEFAULTS.language);
-  const [dataRegion, setDataRegion] = useState<string>(DEFAULTS.dataRegion);
-  const [compact, setCompact] = useState(DEFAULTS.compact);
-  const [highContrast, setHighContrast] = useState(DEFAULTS.highContrast);
-  const [prefsHydrated, setPrefsHydrated] = useState(false);
-
-  // Hydrate from localStorage after mount to avoid SSR mismatches.
-  useEffect(() => {
-    const s = readStored();
-    if (s.language && (LANGUAGE_OPTIONS as readonly string[]).includes(s.language)) setLanguage(s.language);
-    if (s.dataRegion && (DATA_REGION_OPTIONS as readonly string[]).includes(s.dataRegion)) setDataRegion(s.dataRegion);
-    if (typeof s.compact === "boolean") setCompact(s.compact);
-    if (typeof s.highContrast === "boolean") setHighContrast(s.highContrast);
-    setPrefsHydrated(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Persist any change once hydrated.
-  useEffect(() => {
-    if (!prefsHydrated) return;
-    try {
-      window.localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ language, dataRegion, compact, highContrast } satisfies StoredPrefs),
-      );
-    } catch {
-      /* storage unavailable — ignore */
-    }
-  }, [prefsHydrated, language, dataRegion, compact, highContrast]);
+  const { prefs, setPrefs } = useUiPrefs();
+  const language = prefs.language;
+  const dataRegion = prefs.dataRegion;
+  const compact = prefs.compact;
+  const highContrast = prefs.highContrast;
 
   const updateLanguage = (v: string) => {
-    setLanguage(v);
+    setPrefs((prev) => ({ ...prev, language: v }));
     toast.success("System language updated", { description: v });
   };
   const updateDataRegion = (v: string) => {
-    setDataRegion(v);
+    setPrefs((prev) => ({ ...prev, dataRegion: v }));
     toast.success("Data region updated", { description: v });
   };
   const updateCompact = (v: boolean) => {
-    setCompact(v);
+    setPrefs((prev) => ({ ...prev, compact: v }));
     toast.success(v ? "Compact ledger view enabled" : "Compact ledger view disabled");
   };
   const updateHighContrast = (v: boolean) => {
-    setHighContrast(v);
+    setPrefs((prev) => ({ ...prev, highContrast: v }));
     toast.success(v ? "High contrast typography enabled" : "High contrast typography disabled");
   };
 
   const resetPreferences = () => {
-    setLanguage(DEFAULTS.language);
-    setDataRegion(DEFAULTS.dataRegion);
-    setCompact(DEFAULTS.compact);
-    setHighContrast(DEFAULTS.highContrast);
+    setPrefs({
+      language: DEFAULTS.language,
+      dataRegion: DEFAULTS.dataRegion,
+      compact: DEFAULTS.compact,
+      highContrast: DEFAULTS.highContrast,
+    });
     setMotionPref(DEFAULTS.motion);
     toast.success("Preferences reset to defaults", {
       description: "Motion, localization, and access preferences restored.",
@@ -337,10 +301,11 @@ function SettingsPage() {
                         id={s.id}
                         value={s.value}
                         onChange={(e) => s.set(e.target.value)}
+                        style={{ colorScheme: "dark" }}
                         className="appearance-none bg-glass-surface border border-glass-border rounded px-4 py-3 font-body-md text-on-surface w-full focus:border-primary outline-none cursor-pointer"
                       >
                         {s.opts.map((o) => (
-                          <option key={o}>{o}</option>
+                          <option key={o} style={{ backgroundColor: "#1a1a1a", color: "#ffffff", padding: "10px 16px" }}>{o}</option>
                         ))}
                       </select>
                       <Icon
@@ -369,15 +334,31 @@ function SettingsPage() {
                       aria-labelledby={tog.id}
                       aria-describedby={tog.helpId}
                       onClick={() => tog.set(!tog.on)}
-                      className={`w-12 h-6 rounded-full relative flex items-center px-1 cursor-pointer transition-colors shrink-0 ${
-                        tog.on ? "bg-primary" : "bg-surface/60 border border-glass-border"
-                      }`}
+                      style={{
+                        width: 44,
+                        height: 24,
+                        borderRadius: 9999,
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "0 2px",
+                        cursor: "pointer",
+                        border: tog.on ? "1px solid #ffffff" : "1px solid rgba(255,255,255,0.20)",
+                        backgroundColor: tog.on ? "#ffffff" : "rgba(255,255,255,0.08)",
+                        transition: "background-color 0.25s ease, border-color 0.25s ease",
+                        flexShrink: 0,
+                      }}
                     >
                       <span
                         aria-hidden="true"
-                        className={`w-4 h-4 rounded-full transition-transform ${
-                          tog.on ? "bg-white translate-x-6" : "bg-secondary translate-x-0"
-                        }`}
+                        style={{
+                          width: 18,
+                          height: 18,
+                          borderRadius: 9999,
+                          backgroundColor: tog.on ? "#111111" : "#a7a7a7",
+                          transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1), background-color 0.25s ease",
+                          transform: tog.on ? "translateX(20px)" : "translateX(0)",
+                        }}
                       />
                     </button>
                   </div>
@@ -409,11 +390,19 @@ function SettingsPage() {
                           tabIndex={active ? 0 : -1}
                           onClick={() => selectMotion(opt.v)}
                           onKeyDown={(e) => onMotionKeyDown(e, index)}
-                          className={`px-3 py-1 rounded-full font-label-sm text-label-sm uppercase tracking-wider transition-colors ${
-                            active
-                              ? "bg-primary text-on-primary"
-                              : "text-text-secondary hover:text-text-primary"
-                          }`}
+                          style={{
+                            padding: "4px 12px",
+                            borderRadius: 9999,
+                            fontSize: 13,
+                            fontWeight: 500,
+                            letterSpacing: "0.05em",
+                            textTransform: "uppercase" as const,
+                            transition: "background-color 0.2s ease, color 0.2s ease",
+                            backgroundColor: active ? "#ffffff" : "transparent",
+                            color: active ? "#111111" : "rgba(255,255,255,0.60)",
+                            cursor: "pointer",
+                            border: "none",
+                          }}
                         >
                           {opt.l}
                         </button>
@@ -429,14 +418,14 @@ function SettingsPage() {
             <section aria-labelledby={ids.access} className="bento-card p-4 sm:p-8 flex flex-col gap-6 relative">
               <div className="pb-4 border-b border-outline-variant flex flex-wrap justify-between items-center gap-2">
                 <h3 id={ids.access} className="font-label-sm text-label-sm text-on-surface uppercase tracking-widest">Access &amp; Security</h3>
-                <span className="font-mono-code text-xs text-primary bg-primary-fixed px-2 py-1 rounded-sm border border-primary-fixed-dim">
+                <span className="font-mono-code text-xs text-primary px-2 py-1 rounded-sm border border-glass-border bg-transparent">
                   SECURE
                 </span>
               </div>
               <div className="flex flex-col gap-4">
                 {[
-                  { titleId: ids.authProto, helpId: ids.authProtoHelp, icon: "key", title: "Authentication Protocol", desc: "Last rotated 42 days ago.", cta: "Update Key", primary: false },
-                  { titleId: ids.mfa, helpId: ids.mfaHelp, icon: "shield_locked", title: "Multi-Factor Authenticator", desc: "Hardware token mandated for high-level clearance.", cta: "Configure", primary: true },
+                  { titleId: ids.authProto, helpId: ids.authProtoHelp, icon: "key", title: "Authentication Protocol", desc: "Last rotated 42 days ago.", cta: "Update Key" },
+                  { titleId: ids.mfa, helpId: ids.mfaHelp, icon: "shield_locked", title: "Multi-Factor Authenticator", desc: "Hardware token mandated for high-level clearance.", cta: "Configure" },
                 ].map((row) => (
                   <div key={row.title} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border border-glass-border-subtle bg-surface/40 rounded backdrop-blur-sm">
                     <div className="flex items-start gap-4 min-w-0">
@@ -450,11 +439,7 @@ function SettingsPage() {
                       type="button"
                       aria-label={`${row.cta} — ${row.title}`}
                       aria-describedby={row.helpId}
-                      className={
-                        row.primary
-                          ? "text-primary font-label-sm text-label-sm hover:underline uppercase tracking-wide self-start sm:self-auto"
-                          : "border-outline-variant font-label-sm text-label-sm py-2 px-4 rounded-[4px] uppercase self-start sm:self-auto"
-                      }
+                      className="border-outline-variant font-label-sm text-label-sm py-2 px-4 rounded-[4px] uppercase tracking-wide self-start sm:self-auto"
                     >
                       {row.cta}
                     </button>

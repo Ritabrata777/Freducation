@@ -8,7 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { aiAutofillMetadata } from "@/lib/ai-autofill.functions";
 import { checkLinkReachable } from "@/lib/auto-flag.functions";
-import { sha256Hex, scanBanned, checkImageResolution, findDuplicateByHash, loadAutoFlagConfig, type AutoFlag } from "@/lib/auto-flag";
+import { extractMaterialText } from "@/lib/material-extract";
+import {
+  sha256Hex,
+  scanBanned,
+  checkImageResolution,
+  findDuplicateByHash,
+  loadAutoFlagConfig,
+  type AutoFlag,
+} from "@/lib/auto-flag";
 
 const TEXT_EXT = /\.(txt|md|csv|json)$/i;
 const IMAGE_EXT = /\.(png|jpe?g)$/i;
@@ -34,7 +42,11 @@ export const Route = createFileRoute("/_authenticated/ingest")({
   head: () => ({
     meta: [
       { title: "Document Ingestion — Freducation" },
-      { name: "description", content: "Upload academic papers, datasets, and reference materials to the Freducation repository." },
+      {
+        name: "description",
+        content:
+          "Upload academic papers, datasets, and reference materials to the Freducation repository.",
+      },
       { property: "og:title", content: "Document Ingestion — Freducation" },
     ],
   }),
@@ -76,7 +88,9 @@ function IngestPage() {
   const acceptFile = (f: File | null | undefined) => {
     if (!f) return;
     if (!ALLOWED.test(f.name)) {
-      toast.error("Unsupported file type", { description: "Use PDF, DOCX, TXT, CSV, JSON, ZIP, PNG, JPG, or MD." });
+      toast.error("Unsupported file type", {
+        description: "Use PDF, DOCX, TXT, CSV, JSON, ZIP, PNG, JPG, or MD.",
+      });
       return;
     }
     if (f.size > MAX_BYTES) {
@@ -94,8 +108,15 @@ function IngestPage() {
   const linkCheckFn = useServerFn(checkLinkReachable);
 
   const reset = () => {
-    setFile(null); setTitle(""); setDescription(""); setExternalUrl("");
-    setSubject(""); setRegion(""); setBoard(""); setLanguage(""); setTagsInput("");
+    setFile(null);
+    setTitle("");
+    setDescription("");
+    setExternalUrl("");
+    setSubject("");
+    setRegion("");
+    setBoard("");
+    setLanguage("");
+    setTagsInput("");
     setTitleError(undefined);
     setFlags([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -114,7 +135,9 @@ function IngestPage() {
 
     if (isLink && externalUrl.trim()) {
       try {
-        const res = await linkCheckFn({ data: { url: externalUrl.trim(), timeoutMs: cfg.link_timeout_ms } });
+        const res = await linkCheckFn({
+          data: { url: externalUrl.trim(), timeoutMs: cfg.link_timeout_ms },
+        });
         if (!res.ok) {
           reasons.push({
             code: "broken_link",
@@ -150,10 +173,8 @@ function IngestPage() {
       }
     }
 
-
     return { reasons, contentHash };
   }
-
 
   const runAutofill = async () => {
     if (isLink) {
@@ -169,16 +190,23 @@ function IngestPage() {
     try {
       let textSample: string | undefined;
       let imageDataUrl: string | undefined;
-      let filename = file?.name ?? externalUrl;
+      const filename = file?.name ?? externalUrl;
       let mimeType = file?.type || "application/octet-stream";
 
       if (isLink) {
         textSample = `External URL: ${externalUrl}`;
         mimeType = "text/uri-list";
       } else if (file) {
-        if (TEXT_EXT.test(file.name)) {
+        try {
+          textSample = await extractMaterialText(file);
+        } catch {
+          textSample = undefined;
+        }
+
+        if (!textSample && TEXT_EXT.test(file.name)) {
           textSample = await readAsText(file);
-        } else if (IMAGE_EXT.test(file.name) && file.size < 4 * 1024 * 1024) {
+        }
+        if (!textSample && IMAGE_EXT.test(file.name) && file.size < 4 * 1024 * 1024) {
           imageDataUrl = await readAsDataUrl(file);
         }
       }
@@ -191,9 +219,18 @@ function IngestPage() {
       if (meta.region && !region) setRegion(meta.region);
       if (meta.language && !language) setLanguage(meta.language);
       if (meta.tags.length && !tagsInput) setTagsInput(meta.tags.join(", "));
-      toast.success("Fields auto-filled", { description: "Review and edit before publishing." });
+      toast.success(
+        meta.source === "fallback" ? "Fields auto-filled locally" : "Fields auto-filled",
+        {
+          description:
+            meta.source === "fallback"
+              ? "AI is temporarily unavailable, so Freducation used filename and content heuristics instead."
+              : "Review and edit before publishing.",
+        },
+      );
     } catch (err) {
-      toast.error("Auto-fill failed", { description: err instanceof Error ? err.message : "Try again." });
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error("Auto-fill failed", { description: message || "Try again." });
     } finally {
       setAutofilling(false);
     }
@@ -270,14 +307,20 @@ function IngestPage() {
           description: `Auto-flagged: ${reasons.map((r) => r.code.replaceAll("_", " ")).join(", ")}`,
         });
       } else if (trusted) {
-        toast.success("Material published", { description: `${title} is now live in the library.` });
+        toast.success("Material published", {
+          description: `${title} is now live in the library.`,
+        });
       } else {
-        toast.success("Submitted for review", { description: "A moderator will publish it shortly. Trusted contributors skip this step." });
+        toast.success("Submitted for review", {
+          description: "A moderator will publish it shortly. Trusted contributors skip this step.",
+        });
       }
       reset();
       navigate({ to: "/library" });
     } catch (err) {
-      toast.error("Commit failed", { description: err instanceof Error ? err.message : "Please try again." });
+      toast.error("Commit failed", {
+        description: err instanceof Error ? err.message : "Please try again.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -288,25 +331,36 @@ function IngestPage() {
       <TopNav />
       <main className="flex-1 flex flex-col pt-28">
         <div className="p-margin max-w-container-max mx-auto w-full flex-1 flex flex-col">
-
           <div className="mb-8">
-            <h2 className="font-headline-lg text-headline-lg text-on-background">Document Ingestion</h2>
+            <h2 className="font-headline-lg text-headline-lg text-on-background">
+              Document Ingestion
+            </h2>
             <p className="font-body-md text-secondary mt-2 max-w-2xl">
-              Upload academic papers, datasets, or reference materials — or share an external link. Everything you contribute is credited to you.
+              Upload academic papers, datasets, or reference materials — or share an external link.
+              Everything you contribute is credited to you.
             </p>
             {trusted !== null && (
-              <div className={`mt-4 glass-card rounded-xl p-3 flex items-center gap-3 text-sm ${trusted ? "border border-emerald-400/30" : ""}`}>
-                <Icon name={trusted ? "verified" : "hourglass_top"} className={trusted ? "text-emerald-300" : "text-amber-300"} />
+              <div
+                className={`mt-4 glass-card rounded-xl p-3 flex items-center gap-3 text-sm ${trusted ? "border border-emerald-400/30" : ""}`}
+              >
+                <Icon
+                  name={trusted ? "verified" : "hourglass_top"}
+                  className={trusted ? "text-emerald-300" : "text-amber-300"}
+                />
                 <div className="flex-1 min-w-0">
                   {trusted ? (
                     <>
                       <p className="font-medium">Trusted contributor — auto-publish enabled</p>
-                      <p className="text-secondary text-xs">Your uploads go live immediately, no manual review.</p>
+                      <p className="text-secondary text-xs">
+                        Your uploads go live immediately, no manual review.
+                      </p>
                     </>
                   ) : (
                     <>
                       <p className="font-medium">Pending review</p>
-                      <p className="text-secondary text-xs">Reach 5 approved uploads with zero reports to unlock auto-publish.</p>
+                      <p className="text-secondary text-xs">
+                        Reach 5 approved uploads with zero reports to unlock auto-publish.
+                      </p>
                     </>
                   )}
                 </div>
@@ -316,7 +370,7 @@ function IngestPage() {
 
           <div className="grid grid-cols-12 gap-gutter flex-1">
             <div className="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
-              <div className="bento-card p-6 flex-1 flex flex-col min-h-[400px]">
+              <div className="bento-card min-h-100 flex flex-1 flex-col p-6">
                 <div className="flex items-center justify-between border-b border-outline-variant pb-4 mb-6">
                   <h3 className="font-label-sm text-label-sm text-on-surface tracking-widest uppercase">
                     {isLink ? "External Link" : "Source File"}
@@ -337,7 +391,8 @@ function IngestPage() {
                       type="url"
                     />
                     <p className="font-body-md text-secondary mt-3">
-                      Point learners at a YouTube video, Wikipedia article, Google Drive doc, or any public URL.
+                      Point learners at a YouTube video, Wikipedia article, Google Drive doc, or any
+                      public URL.
                     </p>
                   </div>
                 ) : (
@@ -362,7 +417,9 @@ function IngestPage() {
                     </div>
                     {file ? (
                       <>
-                        <h4 className="font-headline-md text-headline-md text-on-surface mb-2">{file.name}</h4>
+                        <h4 className="font-headline-md text-headline-md text-on-surface mb-2">
+                          {file.name}
+                        </h4>
                         <p className="font-body-md text-secondary mb-6 text-center max-w-md">
                           {(file.size / (1024 * 1024)).toFixed(2)} MB · ready to commit
                         </p>
@@ -380,11 +437,16 @@ function IngestPage() {
                       </>
                     ) : (
                       <>
-                        <h4 className="font-headline-md text-headline-md text-on-surface mb-2">Drag &amp; Drop files here</h4>
+                        <h4 className="font-headline-md text-headline-md text-on-surface mb-2">
+                          Drag &amp; Drop files here
+                        </h4>
                         <p className="font-body-md text-secondary mb-6 text-center max-w-md">
                           Supported: PDF, DOCX, TXT, CSV, JSON, ZIP, PNG, JPG, MD.
                         </p>
-                        <button type="button" className="bg-primary text-on-primary px-6 py-2 rounded font-label-sm hover:bg-surface-tint transition-colors">
+                        <button
+                          type="button"
+                          className="bg-primary text-on-primary px-6 py-2 rounded font-label-sm hover:bg-surface-tint transition-colors"
+                        >
                           Browse Files
                         </button>
                       </>
@@ -397,7 +459,9 @@ function IngestPage() {
             <div className="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
               <div className="bento-card p-6 flex-1">
                 <div className="flex items-center justify-between gap-3 border-b border-outline-variant pb-4 mb-6">
-                  <h3 className="font-label-sm text-label-sm text-on-surface tracking-widest uppercase">Metadata</h3>
+                  <h3 className="font-label-sm text-label-sm text-on-surface tracking-widest uppercase">
+                    Metadata
+                  </h3>
                   <button
                     type="button"
                     onClick={runAutofill}
@@ -407,7 +471,11 @@ function IngestPage() {
                     }`}
                     title="Use AI to suggest title, description, tags, and more"
                   >
-                    <Icon name={autofilling ? "progress_activity" : "auto_awesome"} style={{ fontSize: 14 }} className={autofilling ? "animate-spin" : ""} />
+                    <Icon
+                      name={autofilling ? "progress_activity" : "auto_awesome"}
+                      style={{ fontSize: 14 }}
+                      className={autofilling ? "animate-spin" : ""}
+                    />
                     {autofilling ? "Thinking…" : "Auto-fill with AI"}
                   </button>
                 </div>
@@ -421,10 +489,15 @@ function IngestPage() {
                   <Field label="Title" error={titleError}>
                     <input
                       value={title}
-                      onChange={(e) => { setTitle(e.target.value); if (titleError) setTitleError(undefined); }}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        if (titleError) setTitleError(undefined);
+                      }}
                       aria-invalid={!!titleError}
                       className={`w-full h-10 px-3 bg-surface border rounded font-body-md placeholder:text-text-secondary transition-all ${
-                        titleError ? "border-error focus:border-error" : "border-outline-variant focus:border-primary"
+                        titleError
+                          ? "border-error focus:border-error"
+                          : "border-outline-variant focus:border-primary"
                       }`}
                       placeholder="e.g. Class 10 Physics — Optics"
                     />
@@ -457,26 +530,46 @@ function IngestPage() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <Field label="Subject">
-                      <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Physics"
-                        className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary" />
+                      <input
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                        placeholder="Physics"
+                        className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary"
+                      />
                     </Field>
                     <Field label="Board">
-                      <input value={board} onChange={(e) => setBoard(e.target.value)} placeholder="CBSE"
-                        className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary" />
+                      <input
+                        value={board}
+                        onChange={(e) => setBoard(e.target.value)}
+                        placeholder="CBSE"
+                        className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary"
+                      />
                     </Field>
                     <Field label="Region">
-                      <input value={region} onChange={(e) => setRegion(e.target.value)} placeholder="India — WB"
-                        className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary" />
+                      <input
+                        value={region}
+                        onChange={(e) => setRegion(e.target.value)}
+                        placeholder="India — WB"
+                        className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary"
+                      />
                     </Field>
                     <Field label="Language">
-                      <input value={language} onChange={(e) => setLanguage(e.target.value)} placeholder="English"
-                        className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary" />
+                      <input
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        placeholder="English"
+                        className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary"
+                      />
                     </Field>
                   </div>
 
                   <Field label="Tags (comma separated)">
-                    <input value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} placeholder="class-10, optics, ray-diagrams"
-                      className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary" />
+                    <input
+                      value={tagsInput}
+                      onChange={(e) => setTagsInput(e.target.value)}
+                      placeholder="class-10, optics, ray-diagrams"
+                      className="w-full h-10 px-3 bg-glass-surface border border-glass-border rounded font-body-md focus:border-primary"
+                    />
                   </Field>
 
                   <div className="mt-2 pt-4 border-t border-outline-variant flex gap-3">
@@ -496,7 +589,12 @@ function IngestPage() {
                     >
                       {submitting ? (
                         <>
-                          <span className="material-symbols-outlined animate-spin" style={{ fontSize: 14 }}>progress_activity</span>
+                          <span
+                            className="material-symbols-outlined animate-spin"
+                            style={{ fontSize: 14 }}
+                          >
+                            progress_activity
+                          </span>
                           Publishing…
                         </>
                       ) : (
@@ -516,7 +614,15 @@ function IngestPage() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="font-label-sm text-on-surface text-label-sm">{label}</label>
