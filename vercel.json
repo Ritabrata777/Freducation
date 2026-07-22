@@ -1,5 +1,9 @@
 {
-  "framework": "tanstack-start",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".vercel/output",
   "build": {
     "env": {
       "NITRO_PRESET": "vercel"

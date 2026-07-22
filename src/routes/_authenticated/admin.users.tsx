@@ -80,12 +80,15 @@ function UsersPage() {
           </div>
 
           <div className="bento-card overflow-hidden">
+            <div className="border-b border-outline-variant/40 bg-surface/30 px-6 py-3 text-xs font-label-sm uppercase tracking-wider text-secondary">
+              Compact ledger mode from Settings reduces row density automatically.
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-outline-variant/50 bg-surface/40 backdrop-blur-sm">
                     {["User", "Email", "Region", "Contributions", "Roles", "Joined", ""].map((h) => (
-                      <th key={h} className="py-3 px-6 font-label-sm text-label-sm text-secondary uppercase tracking-wider">
+                      <th key={h} className="px-6 py-3 font-label-sm text-label-sm text-secondary uppercase tracking-wider">
                         {h}
                       </th>
                     ))}
