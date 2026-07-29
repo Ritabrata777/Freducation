@@ -1,0 +1,12 @@
+services:
+  ai-rag-service:
+    build:
+      context: ./ai-rag-service
+    ports:
+      - "8000:8000"
+    environment:
+      LITEROUTER_API_KEY: ${LITEROUTER_API_KEY:-}
+      LITE_ROUTER_API_KEY: ${LITE_ROUTER_API_KEY:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-5-nano}
+      LITEROUTER_BASE_URL: ${LITEROUTER_BASE_URL:-https://api.literouter.com/v1}

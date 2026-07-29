@@ -8,6 +8,7 @@ type NavItem = { to: string; label: string; adminOnly?: boolean; authOnly?: bool
 
 const NAV: NavItem[] = [
   { to: "/home", label: "Dashboard" },
+  { to: "/ai", label: "AI", authOnly: true },
   { to: "/library", label: "Library" },
   { to: "/my-list", label: "My List", authOnly: true },
   { to: "/requests", label: "Requests", authOnly: true },
@@ -45,9 +46,21 @@ export function TopNav({ query, setQuery, searchPlaceholder = "Search…" }: Top
       <svg style={{ position: "absolute", width: 0, height: 0 }} aria-hidden="true">
         <defs>
           <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.008 0.008"
+              numOctaves="2"
+              seed="92"
+              result="noise"
+            />
             <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
-            <feDisplacementMap in="SourceGraphic" in2="blurred" scale="70" xChannelSelector="R" yChannelSelector="G" />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="blurred"
+              scale="70"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
           </filter>
         </defs>
       </svg>
@@ -57,7 +70,9 @@ export function TopNav({ query, setQuery, searchPlaceholder = "Search…" }: Top
         <div className="lg-specular" />
         <div className="lg-content">
           <Link to="/home" className="flex items-center gap-2 shrink-0">
-            <span className="font-headline-md text-[20px] text-primary font-bold drop-shadow-sm">Freducation</span>
+            <span className="font-headline-md text-[20px] text-primary font-bold drop-shadow-sm">
+              Freducation
+            </span>
           </Link>
           <nav className="hidden lg:flex items-center gap-1">
             {items.map((it) => {
@@ -116,4 +131,3 @@ export function TopNav({ query, setQuery, searchPlaceholder = "Search…" }: Top
     </>
   );
 }
-
