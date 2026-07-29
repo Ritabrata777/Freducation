@@ -32,7 +32,7 @@ function PoliciesPage() {
   return (
     <div className="text-on-background font-body-md min-h-screen">
       <TopNav />
-      <main className="pt-28 flex flex-col min-h-screen w-full max-w-[1440px] mx-auto">
+      <main className="pt-36 lg:pt-28 flex flex-col min-h-screen w-full max-w-[1440px] mx-auto">
         <div className="p-margin">
 
           <div className="grid grid-cols-12 gap-gutter">

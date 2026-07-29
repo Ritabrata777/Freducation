@@ -247,8 +247,8 @@ function AiToolsPage() {
   return (
     <div className="text-on-background font-body-md antialiased min-h-screen">
       <TopNav />
-      <main className="pt-28 pb-margin">
-        <div className="max-w-container-max mx-auto px-margin">
+      <main className="pt-36 lg:pt-28 pb-margin">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin">
           <section className="bento-card overflow-hidden mb-gutter">
             <div className="relative p-6 md:p-8 bg-linear-to-br from-primary/15 via-white/5 to-transparent">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -455,8 +455,8 @@ function AiResultView({
   return (
     <div className="text-on-background font-body-md antialiased min-h-screen">
       <TopNav />
-      <main className="pt-28 pb-margin">
-        <div className="max-w-container-max mx-auto px-margin">
+      <main className="pt-36 lg:pt-28 pb-margin">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin">
           <section className="bento-card overflow-hidden mb-gutter">
             <div className="p-5 md:p-6 bg-linear-to-br from-primary/15 via-white/5 to-transparent">
               <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">

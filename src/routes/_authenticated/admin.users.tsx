@@ -69,7 +69,7 @@ function UsersPage() {
   return (
     <div className="text-on-background font-body-md min-h-screen">
       <TopNav />
-      <main className="pt-28 min-h-screen w-full">
+      <main className="pt-36 lg:pt-28 min-h-screen w-full">
         <div className="p-margin max-w-container-max mx-auto">
 
           <div className="mb-gutter">

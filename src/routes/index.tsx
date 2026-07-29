@@ -88,13 +88,13 @@ function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="pt-40 pb-16 px-gutter relative overflow-hidden">
+      <section className="pt-32 sm:pt-40 pb-16 px-4 sm:px-gutter relative overflow-hidden">
         <div className="max-w-container-max mx-auto text-center relative z-10">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-glass-surface border border-glass-border text-text-secondary font-label-sm text-label-sm uppercase tracking-widest">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Open · Community-moderated · Free
           </span>
-          <h1 className="mt-6 font-headline-md text-[44px] md:text-[68px] leading-[1.03] tracking-tight text-white">
+          <h1 className="mt-6 font-headline-md text-[38px] sm:text-[44px] md:text-[68px] leading-[1.03] tracking-tight text-white">
             A shared library for the way<br className="hidden md:block" />
             <span className="text-primary">your region actually studies.</span>
           </h1>
@@ -130,7 +130,7 @@ function Landing() {
       </section>
 
       {/* Regions marquee */}
-      <section className="py-8 px-gutter">
+      <section className="py-8 px-4 sm:px-gutter">
         <div className="max-w-container-max mx-auto">
           <div className="text-center font-label-sm text-label-sm uppercase tracking-widest text-text-secondary mb-4">
             Materials from learners across
@@ -146,7 +146,7 @@ function Landing() {
       </section>
 
       {/* About */}
-      <section id="about" className="py-20 px-gutter">
+      <section id="about" className="py-14 sm:py-20 px-4 sm:px-gutter">
         <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-gutter items-start">
           <div>
             <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary">About Freducation</span>
@@ -162,7 +162,7 @@ function Landing() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-20 px-gutter">
+      <section id="features" className="py-14 sm:py-20 px-4 sm:px-gutter">
         <div className="max-w-container-max mx-auto">
           <div className="text-center max-w-2xl mx-auto">
             <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary">What you get</span>
@@ -185,8 +185,8 @@ function Landing() {
       </section>
 
       {/* Subjects */}
-      <section className="py-12 px-gutter">
-        <div className="max-w-container-max mx-auto bento-card p-8">
+      <section className="py-12 px-4 sm:px-gutter">
+        <div className="max-w-container-max mx-auto bento-card p-5 sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div>
               <div className="font-label-sm text-label-sm uppercase tracking-widest text-primary">Browse by subject</div>
@@ -207,7 +207,7 @@ function Landing() {
       </section>
 
       {/* How it works */}
-      <section id="how" className="py-20 px-gutter">
+      <section id="how" className="py-14 sm:py-20 px-4 sm:px-gutter">
         <div className="max-w-container-max mx-auto">
           <div className="text-center max-w-2xl mx-auto">
             <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary">How it works</span>
@@ -232,8 +232,8 @@ function Landing() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-gutter">
-        <div className="max-w-3xl mx-auto bento-card p-10 text-center relative overflow-hidden">
+      <section className="py-16 sm:py-24 px-4 sm:px-gutter">
+        <div className="max-w-3xl mx-auto bento-card p-6 sm:p-10 text-center relative overflow-hidden">
           <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-primary/20 blur-3xl" aria-hidden />
           <div className="relative">
             <h2 className="font-headline-md text-[32px] leading-tight text-white">Ready to jump in?</h2>
@@ -260,7 +260,7 @@ function Landing() {
         </div>
       </section>
 
-      <footer className="py-10 px-gutter border-t border-glass-border">
+      <footer className="py-10 px-4 sm:px-gutter border-t border-glass-border">
         <div className="max-w-container-max mx-auto flex flex-wrap items-center justify-between gap-3">
           <span className="font-label-sm text-label-sm text-text-secondary">© {new Date().getFullYear()} Freducation</span>
           <div className="flex items-center gap-4 text-text-secondary font-label-sm text-label-sm uppercase tracking-widest">

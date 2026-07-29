@@ -185,7 +185,7 @@ function SettingsPage() {
   return (
     <div className="text-on-background font-body-md antialiased min-h-screen">
       <TopNav />
-      <main className="pt-28 pb-margin px-4 sm:px-margin max-w-container-max mx-auto flex flex-col gap-gutter">
+      <main className="pt-36 lg:pt-28 pb-margin px-4 sm:px-margin max-w-container-max mx-auto flex flex-col gap-gutter">
 
           <div className="mb-4 min-w-0">
             <h2 className="font-headline-lg text-2xl sm:text-headline-lg text-on-surface break-words">Configuration</h2>

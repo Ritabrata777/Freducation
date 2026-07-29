@@ -108,8 +108,8 @@ function ProfilePage() {
   return (
     <div className="text-on-background font-body-md antialiased min-h-screen">
       <TopNav />
-      <main className="pt-28 pb-margin">
-        <div className="max-w-container-max mx-auto px-margin">
+      <main className="pt-36 lg:pt-28 pb-margin">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin">
           <Link to="/library" className="inline-flex items-center gap-1 text-sm text-secondary hover:text-on-background mb-4">
             <Icon name="arrow_back" className="text-base" /> Back to Library
           </Link>
