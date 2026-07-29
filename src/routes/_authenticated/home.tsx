@@ -10,6 +10,7 @@ import { useMyProgress } from "@/hooks/use-progress";
 import { useRecommendations } from "@/hooks/use-recommendations";
 import { ProgressControls } from "@/components/ProgressControls";
 import { exportPageViewsCsv } from "@/lib/admin.functions";
+
 import { useState } from "react";
 import { toast } from "@/lib/toast";
 
@@ -17,9 +18,15 @@ export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({
     meta: [
       { title: "Home — Freducation" },
-      { name: "description", content: "Your regional learning hub — browse, upload and discover educational materials." },
+      {
+        name: "description",
+        content: "Your regional learning hub — browse, upload and discover educational materials.",
+      },
       { property: "og:title", content: "Home — Freducation" },
-      { property: "og:description", content: "Your regional learning hub — browse, upload and discover educational materials." },
+      {
+        property: "og:description",
+        content: "Your regional learning hub — browse, upload and discover educational materials.",
+      },
     ],
   }),
   component: Home,
@@ -60,7 +67,10 @@ function Home() {
     queryFn: async () => {
       const [materials, live, collections] = await Promise.all([
         supabase.from("materials").select("id", { count: "exact", head: true }),
-        supabase.from("materials").select("id", { count: "exact", head: true }).eq("status", "live"),
+        supabase
+          .from("materials")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "live"),
         supabase.from("collections").select("id", { count: "exact", head: true }),
       ]);
       return {
@@ -84,7 +94,6 @@ function Home() {
       return { total: Number(total.data ?? 0), anon: Number(anon.data ?? 0) };
     },
   });
-
 
   const progressQ = useMyProgress();
   const resumeTarget = (progressQ.data ?? []).find(
@@ -111,28 +120,46 @@ function Home() {
   const hasError = recentQ.isError || statsQ.isError;
 
   const adminMetrics = [
-    { label: "Collections", icon: "folder", value: statsQ.data?.collections.toLocaleString() ?? "—" },
-    { label: "Materials", icon: "inventory_2", value: statsQ.data?.totalMaterials.toLocaleString() ?? "—" },
-    { label: "Live", icon: "check_circle", value: statsQ.data?.liveMaterials.toLocaleString() ?? "—" },
-    { label: "Sys Health", icon: "monitor_heart", value: hasError ? "!!!" : "OK", accent: hasError },
+    {
+      label: "Collections",
+      icon: "folder",
+      value: statsQ.data?.collections.toLocaleString() ?? "—",
+    },
+    {
+      label: "Materials",
+      icon: "inventory_2",
+      value: statsQ.data?.totalMaterials.toLocaleString() ?? "—",
+    },
+    {
+      label: "Live",
+      icon: "check_circle",
+      value: statsQ.data?.liveMaterials.toLocaleString() ?? "—",
+    },
+    {
+      label: "Sys Health",
+      icon: "monitor_heart",
+      value: hasError ? "!!!" : "OK",
+      accent: hasError,
+    },
   ];
 
   const displayName =
-    (user?.user_metadata?.full_name as string | undefined) ||
-    user?.email?.split("@")[0] ||
-    "there";
+    (user?.user_metadata?.full_name as string | undefined) || user?.email?.split("@")[0] || "there";
 
   return (
     <div className="text-on-background font-body-md antialiased min-h-screen">
       <TopNav />
       <main className="pt-28 pb-margin">
         <div className="max-w-container-max mx-auto px-margin">
-
           {isAdmin ? (
             <>
               <div className="mb-gutter">
-                <h1 className="font-headline-lg text-headline-lg text-on-background">System Overview</h1>
-                <p className="text-secondary font-body-md mt-1">Recent uploads and telemetry across the ledger.</p>
+                <h1 className="font-headline-lg text-headline-lg text-on-background">
+                  System Overview
+                </h1>
+                <p className="text-secondary font-body-md mt-1">
+                  Recent uploads and telemetry across the ledger.
+                </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-gutter">
                 {loading
@@ -148,25 +175,40 @@ function Home() {
                         className={`bento-card p-6 flex flex-col justify-between h-32 ${m.accent ? "border-error/30 bg-error-container/10" : ""}`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className={`font-label-sm text-label-sm uppercase tracking-wider ${m.accent ? "text-error" : "text-secondary"}`}>
+                          <span
+                            className={`font-label-sm text-label-sm uppercase tracking-wider ${m.accent ? "text-error" : "text-secondary"}`}
+                          >
                             {m.label}
                           </span>
-                          <Icon name={m.icon} className={m.accent ? "text-error" : "text-secondary"} style={{ fontSize: 14 }} />
+                          <Icon
+                            name={m.icon}
+                            className={m.accent ? "text-error" : "text-secondary"}
+                            style={{ fontSize: 14 }}
+                          />
                         </div>
-                        <div className={`font-headline-lg text-headline-lg ${m.accent ? "text-error" : "text-on-background"}`}>{m.value}</div>
+                        <div
+                          className={`font-headline-lg text-headline-lg ${m.accent ? "text-error" : "text-on-background"}`}
+                        >
+                          {m.value}
+                        </div>
                       </div>
                     ))}
               </div>
             </>
           ) : (
             <>
-              <div className="bento-card p-8 mb-gutter bg-gradient-to-br from-white/10 to-transparent">
+              <div className="bento-card p-8 mb-gutter bg-linear-to-br from-white/10 to-transparent">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div>
-                    <p className="font-label-sm text-label-sm uppercase tracking-wider text-secondary mb-2">Welcome back</p>
-                    <h1 className="font-headline-lg text-headline-lg text-on-background">Hi, {displayName} 👋</h1>
+                    <p className="font-label-sm text-label-sm uppercase tracking-wider text-secondary mb-2">
+                      Welcome back
+                    </p>
+                    <h1 className="font-headline-lg text-headline-lg text-on-background">
+                      Hi, {displayName} 👋
+                    </h1>
                     <p className="text-secondary font-body-md mt-2 max-w-xl">
-                      Discover region-specific learning materials or contribute your own to help others learn.
+                      Discover region-specific learning materials or contribute your own to help
+                      others learn.
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-3">
@@ -175,12 +217,10 @@ function Home() {
                         to="/material/$id"
                         params={{ id: resumeQ.data.id }}
                         title={`Resume: ${resumeQ.data.title}`}
-                        className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm hover:opacity-90 transition max-w-[280px]"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm hover:opacity-90 transition max-w-70"
                       >
                         <Icon name="play_circle" style={{ fontSize: 18 }} />
-                        <span className="truncate">
-                          Resume: {resumeQ.data.title}
-                        </span>
+                        <span className="truncate">Resume: {resumeQ.data.title}</span>
                         <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0">
                           {resumeTarget.status === "reading" ? "Reading" : "Saved"}
                         </span>
@@ -214,11 +254,31 @@ function Home() {
                   ))
                 ) : (
                   <>
-                    <StatCard label="Total Views" icon="visibility" value={viewsQ.data?.total ?? 0} />
-                    <StatCard label="Anonymous Views" icon="person_off" value={viewsQ.data?.anon ?? 0} />
-                    <StatCard label="Collections" icon="folder" value={statsQ.data?.collections ?? 0} />
-                    <StatCard label="Live Materials" icon="check_circle" value={statsQ.data?.liveMaterials ?? 0} />
-                    <StatCard label="Total Materials" icon="inventory_2" value={statsQ.data?.totalMaterials ?? 0} />
+                    <StatCard
+                      label="Total Views"
+                      icon="visibility"
+                      value={viewsQ.data?.total ?? 0}
+                    />
+                    <StatCard
+                      label="Anonymous Views"
+                      icon="person_off"
+                      value={viewsQ.data?.anon ?? 0}
+                    />
+                    <StatCard
+                      label="Collections"
+                      icon="folder"
+                      value={statsQ.data?.collections ?? 0}
+                    />
+                    <StatCard
+                      label="Live Materials"
+                      icon="check_circle"
+                      value={statsQ.data?.liveMaterials ?? 0}
+                    />
+                    <StatCard
+                      label="Total Materials"
+                      icon="inventory_2"
+                      value={statsQ.data?.totalMaterials ?? 0}
+                    />
                   </>
                 )}
               </div>
@@ -226,7 +286,6 @@ function Home() {
               <div className="flex justify-end mb-gutter">
                 <ExportViewsButton />
               </div>
-
             </>
           )}
 
@@ -243,7 +302,10 @@ function Home() {
                       : "Save or start reading a few materials to personalize this feed."}
                   </p>
                 </div>
-                <Link to="/my-list" className="text-primary font-label-sm text-label-sm hover:underline shrink-0">
+                <Link
+                  to="/my-list"
+                  className="text-primary font-label-sm text-label-sm hover:underline shrink-0"
+                >
                   My List →
                 </Link>
               </div>
@@ -282,7 +344,10 @@ function Home() {
                       {m.reasons.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mb-3">
                           {m.reasons.map((r) => (
-                            <span key={r} className="text-[10px] font-label-sm text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
+                            <span
+                              key={r}
+                              className="text-[10px] font-label-sm text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5"
+                            >
                               {r}
                             </span>
                           ))}
@@ -301,13 +366,15 @@ function Home() {
             </section>
           )}
 
-
           <div className="bento-card overflow-hidden">
             <div className="px-6 py-4 border-b border-outline-variant/50 bg-surface/40 backdrop-blur-sm flex justify-between items-center">
               <h3 className="font-headline-md text-headline-md text-on-background text-[20px]">
                 {isAdmin ? "Recent Material Uploads" : "Latest Materials"}
               </h3>
-              <Link to="/library" className="text-primary font-label-sm text-label-sm hover:underline">
+              <Link
+                to="/library"
+                className="text-primary font-label-sm text-label-sm hover:underline"
+              >
                 View all →
               </Link>
             </div>
@@ -316,7 +383,10 @@ function Home() {
                 <thead>
                   <tr className="border-b border-outline-variant/50 bg-surface/40 backdrop-blur-sm">
                     {["Title", "Type", "Region", "Status", "Uploaded"].map((h) => (
-                      <th key={h} className="py-3 px-6 font-label-sm text-label-sm text-secondary uppercase tracking-wider">
+                      <th
+                        key={h}
+                        className="py-3 px-6 font-label-sm text-label-sm text-secondary uppercase tracking-wider"
+                      >
                         {h}
                       </th>
                     ))}
@@ -327,19 +397,36 @@ function Home() {
                     Array.from({ length: 4 }).map((_, i) => (
                       <tr key={i} className="border-b border-outline-variant/50 bg-surface/40">
                         {Array.from({ length: 5 }).map((__, j) => (
-                          <td key={j} className="py-4 px-6"><Skeleton className="h-4 w-full max-w-[160px]" /></td>
+                          <td key={j} className="py-4 px-6">
+                            <Skeleton className="h-4 w-full max-w-40" />
+                          </td>
                         ))}
                       </tr>
                     ))
                   ) : hasError ? (
-                    <tr><td colSpan={5} className="py-10 text-center text-error font-body-md">Couldn't load materials. Try again in a moment.</td></tr>
+                    <tr>
+                      <td colSpan={5} className="py-10 text-center text-error font-body-md">
+                        Couldn't load materials. Try again in a moment.
+                      </td>
+                    </tr>
                   ) : rows.length === 0 ? (
-                    <tr><td colSpan={5} className="py-10 text-center text-secondary font-body-md">No materials yet — head to Ingest to add the first one.</td></tr>
+                    <tr>
+                      <td colSpan={5} className="py-10 text-center text-secondary font-body-md">
+                        No materials yet — head to Ingest to add the first one.
+                      </td>
+                    </tr>
                   ) : (
                     rows.map((r) => (
-                      <tr key={r.id} className="border-b border-outline-variant/50 hover:bg-surface-container-low/60 transition-colors bg-surface/40 cursor-pointer">
+                      <tr
+                        key={r.id}
+                        className="border-b border-outline-variant/50 hover:bg-surface-container-low/60 transition-colors bg-surface/40 cursor-pointer"
+                      >
                         <td className="py-4 px-6 font-body-md text-on-background font-medium">
-                          <Link to="/material/$id" params={{ id: r.id }} className="hover:text-primary">
+                          <Link
+                            to="/material/$id"
+                            params={{ id: r.id }}
+                            className="hover:text-primary"
+                          >
                             {r.title}
                           </Link>
                         </td>
@@ -368,10 +455,14 @@ function StatCard({ label, icon, value }: { label: string; icon: string; value: 
   return (
     <div className="bento-card p-6 flex flex-col justify-between h-28">
       <div className="flex items-center justify-between">
-        <span className="font-label-sm text-label-sm uppercase tracking-wider text-secondary">{label}</span>
+        <span className="font-label-sm text-label-sm uppercase tracking-wider text-secondary">
+          {label}
+        </span>
         <Icon name={icon} className="text-secondary" style={{ fontSize: 16 }} />
       </div>
-      <div className="font-headline-lg text-headline-lg text-on-background">{value.toLocaleString()}</div>
+      <div className="font-headline-lg text-headline-lg text-on-background">
+        {value.toLocaleString()}
+      </div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ Freducation lets contributors upload, share, and discover study resources across
 - **Backend / Database:** Supabase with Row Level Security (RLS)
 - **Auth:** Supabase Auth with Google OAuth
 - **Storage:** Supabase Storage with signed URLs
-- **AI:** Gemini API for metadata auto-fill and recommendation features
+- **AI:** LiteRouter/OpenAI-compatible API plus Python RAG service for metadata, study tools, and recommendations
 - **Icons:** Material Symbols Outlined
 - **Fonts:** Geist, Inter
 
@@ -91,7 +91,11 @@ bun install
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_SUPABASE_PROJECT_ID=
-GEMINI_API_KEY=
+LITEROUTER_API_KEY=
+AI_MODEL=gpt-5-nano
+LITEROUTER_BASE_URL=https://api.literouter.com/v1
+# Optional: only needed for the Python RAG microservice
+AI_RAG_SERVICE_URL=
 ```
 
 3. Run the development server

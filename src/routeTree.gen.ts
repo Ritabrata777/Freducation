@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedAiRouteImport } from './routes/_authenticated/ai'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedIngestRouteImport } from './routes/_authenticated/ingest'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAiRoute = AuthenticatedAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
@@ -97,6 +103,7 @@ const AuthenticatedUUserIdRoute = AuthenticatedUUserIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai': typeof AuthenticatedAiRoute
   '/home': typeof AuthenticatedHomeRoute
   '/ingest': typeof AuthenticatedIngestRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai': typeof AuthenticatedAiRoute
   '/home': typeof AuthenticatedHomeRoute
   '/ingest': typeof AuthenticatedIngestRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/ai': typeof AuthenticatedAiRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/ingest': typeof AuthenticatedIngestRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai'
     | '/home'
     | '/ingest'
     | '/library'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai'
     | '/home'
     | '/ingest'
     | '/library'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/_authenticated/ai'
     | '/_authenticated/home'
     | '/_authenticated/ingest'
     | '/_authenticated/library'
@@ -213,6 +225,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/ai': {
+      id: '/_authenticated/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AuthenticatedAiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/home': {
       id: '/_authenticated/home'
@@ -302,6 +321,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAiRoute: typeof AuthenticatedAiRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedIngestRoute: typeof AuthenticatedIngestRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
@@ -315,6 +335,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAiRoute: AuthenticatedAiRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedIngestRoute: AuthenticatedIngestRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,

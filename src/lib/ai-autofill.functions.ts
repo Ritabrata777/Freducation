@@ -35,30 +35,32 @@ Respond ONLY with JSON matching:
 - language: e.g. "English"
 - tags: 4-8 short lowercase kebab-case tags based on real topics in the material`;
 
-const DEFAULT_GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta";
+const DEFAULT_LITEROUTER_URL = "https://api.literouter.com/v1";
+const DEFAULT_AI_MODEL = "gpt-5-nano";
 
 function resolveApiKey(): string {
-  const apiKey = process.env.GEMINI_API_KEY ?? process.env.AI_API_KEY;
+  const apiKey =
+    process.env.LITEROUTER_API_KEY ?? process.env.LITE_ROUTER_API_KEY ?? process.env.AI_API_KEY;
   if (!apiKey?.trim()) {
-    throw new Error("Gemini API key not configured (set GEMINI_API_KEY or AI_API_KEY in .env)");
+    throw new Error("LiteRouter API key not configured (set LITEROUTER_API_KEY in .env)");
   }
   return apiKey.trim();
 }
 
-function resolveGeminiBaseUrl(): string {
-  const configured = process.env.AI_GATEWAY_URL?.trim();
-  if (!configured) return DEFAULT_GEMINI_URL;
+function resolveLiteRouterBaseUrl(): string {
+  const configured =
+    process.env.LITEROUTER_BASE_URL ??
+    process.env.LITE_ROUTER_BASE_URL ??
+    process.env.AI_GATEWAY_URL ??
+    DEFAULT_LITEROUTER_URL;
   try {
-    const url = new URL(configured);
+    const url = new URL(configured.trim());
     if (url.protocol !== "http:" && url.protocol !== "https:") {
       throw new Error("unsupported protocol");
     }
-    return configured.replace(/\/+$/, "");
+    return configured.trim().replace(/\/+$/, "");
   } catch {
-    throw new Error(
-      "AI_GATEWAY_URL must be a full Gemini API base URL (e.g. https://generativelanguage.googleapis.com/v1beta). " +
-        "Put your API key in GEMINI_API_KEY or AI_API_KEY, not AI_GATEWAY_URL.",
-    );
+    throw new Error("LITEROUTER_BASE_URL must be a full OpenAI-compatible base URL.");
   }
 }
 
@@ -432,40 +434,34 @@ export const aiAutofillMetadata = createServerFn({ method: "POST" })
     let baseUrl: string;
     try {
       apiKey = resolveApiKey();
-      baseUrl = resolveGeminiBaseUrl();
+      baseUrl = resolveLiteRouterBaseUrl();
     } catch {
       return fallback;
     }
 
-    const model = process.env.AI_MODEL ?? "gemini-2.0-flash";
+    const model = process.env.AI_MODEL ?? DEFAULT_AI_MODEL;
+    const imageNote = data.imageDataUrl
+      ? "\nImage content is attached in the upload; infer from filename and available text if vision is unavailable."
+      : "";
+    const userContent = `Filename: ${data.filename}\nMIME: ${data.mimeType}\n${
+      data.textSample
+        ? `\nExtracted material text (primary evidence):\n"""${data.textSample.slice(0, 12000)}"""`
+        : ""
+    }${imageNote}`;
 
-    const parts: Array<Record<string, unknown>> = [
-      {
-        text: `Filename: ${data.filename}\nMIME: ${data.mimeType}\n${
-          data.textSample
-            ? `\nExtracted material text (primary evidence):\n"""${data.textSample.slice(0, 12000)}"""`
-            : ""
-        }`,
-      },
-    ];
-
-    if (data.imageDataUrl) {
-      const image = parseDataUrl(data.imageDataUrl);
-      if (image) {
-        parts.push({ inline_data: { mime_type: image.mimeType, data: image.data } });
-      }
-    }
-
-    const res = await fetch(`${baseUrl}/models/${model}:generateContent`, {
+    const res = await fetch(`${baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM }] },
-        contents: [{ role: "user", parts }],
-        generationConfig: { responseMimeType: "application/json" },
+        model,
+        messages: [
+          { role: "system", content: SYSTEM },
+          { role: "user", content: userContent },
+        ],
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -478,11 +474,7 @@ export const aiAutofillMetadata = createServerFn({ method: "POST" })
     }
 
     const json = await res.json();
-    const partsText =
-      json?.candidates?.[0]?.content?.parts
-        ?.map((part: { text?: string }) => part?.text ?? "")
-        .join("\n") ?? "{}";
-    const raw = extractJsonText(partsText);
+    const raw = extractJsonText(json?.choices?.[0]?.message?.content ?? "{}");
     let parsed: Record<string, unknown> = {};
     try {
       parsed = JSON.parse(raw) as Record<string, unknown>;
