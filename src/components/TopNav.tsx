@@ -92,7 +92,7 @@ export function TopNav({ query, setQuery, searchPlaceholder = "Search…" }: Top
               );
             })}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {setQuery && (
               <div className="relative w-64 hidden xl:block">
                 <Icon
@@ -127,6 +127,27 @@ export function TopNav({ query, setQuery, searchPlaceholder = "Search…" }: Top
             )}
           </div>
         </div>
+        <nav
+          aria-label="Primary"
+          className="absolute top-[calc(100%+0.5rem)] left-0 right-0 flex gap-2 overflow-x-auto rounded-2xl border border-glass-border bg-surface-container-high/95 p-2 shadow-xl backdrop-blur-xl lg:hidden"
+        >
+          {items.map((it) => {
+            const active = pathname === it.to;
+            return (
+              <Link
+                key={it.to}
+                to={it.to}
+                className={`shrink-0 rounded-xl px-3 py-2 font-label-sm text-[11px] uppercase tracking-wider transition-colors ${
+                  active
+                    ? "bg-glass-input-strong text-white"
+                    : "text-text-secondary hover:bg-glass-surface hover:text-white"
+                }`}
+              >
+                {it.label}
+              </Link>
+            );
+          })}
+        </nav>
       </header>
     </>
   );

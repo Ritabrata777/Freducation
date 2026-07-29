@@ -88,11 +88,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Structured knowledge platform for academic engineering: upload, index, moderate, and retrieve high-signal learning materials.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://freducation-five.vercel.app/home" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "canonical", href: "https://freducation-five.vercel.app/home" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
         rel: "preconnect",

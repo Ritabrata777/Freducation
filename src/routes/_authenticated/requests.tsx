@@ -160,8 +160,8 @@ function RequestsPage() {
   return (
     <div className="text-on-background font-body-md antialiased min-h-screen">
       <TopNav />
-      <main className="pt-28 pb-margin">
-        <div className="max-w-container-max mx-auto px-margin">
+      <main className="pt-36 lg:pt-28 pb-margin">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin">
           <div className="mb-gutter flex flex-wrap items-start justify-between gap-4">
             <div>
               <h1 className="font-headline-lg text-headline-lg text-on-background">Request Board</h1>

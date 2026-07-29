@@ -329,7 +329,7 @@ function IngestPage() {
   return (
     <div className="text-on-background min-h-screen flex flex-col font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
       <TopNav />
-      <main className="flex-1 flex flex-col pt-28">
+      <main className="flex-1 flex flex-col pt-36 lg:pt-28">
         <div className="p-margin max-w-container-max mx-auto w-full flex-1 flex flex-col">
           <div className="mb-8">
             <h2 className="font-headline-lg text-headline-lg text-on-background">

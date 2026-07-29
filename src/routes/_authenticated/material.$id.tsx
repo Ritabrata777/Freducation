@@ -333,7 +333,7 @@ function MaterialPage() {
   return (
     <div className="text-on-background font-body-md antialiased min-h-screen">
       <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant">
-        <div className="max-w-container-max mx-auto px-margin pt-4 pb-3">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin pt-4 pb-3">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12px] font-label-sm uppercase tracking-wider text-secondary mb-2">
             <Link to="/library" className="hover:text-primary transition-colors inline-flex items-center gap-1">
               <Icon name="menu_book" style={{ fontSize: 14 }} />
@@ -404,7 +404,7 @@ function MaterialPage() {
       </header>
 
       {downloading && (
-        <div className="max-w-container-max mx-auto px-margin pb-gutter">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin pb-gutter">
           <div className="bento-card p-4 flex items-center gap-4">
             <Icon
               name="progress_activity"
@@ -430,7 +430,7 @@ function MaterialPage() {
       )}
 
       {downloadError && (
-        <div className="max-w-container-max mx-auto px-margin pb-gutter">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin pb-gutter">
           <div className="bento-card p-4 flex items-start gap-3 border border-error">
             <Icon
               name="error"
@@ -456,7 +456,7 @@ function MaterialPage() {
         </div>
       )}
 
-      <main className={`max-w-container-max mx-auto px-margin grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-gutter ${downloading || downloadError ? "pb-gutter" : "py-gutter"}`}>
+      <main className={`max-w-container-max mx-auto px-4 sm:px-margin grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-gutter ${downloading || downloadError ? "pb-gutter" : "py-gutter"}`}>
         <section className="bento-card overflow-hidden min-h-[70vh] flex flex-col">
           {materialQ.isLoading || urlLoading ? (
             <div className="flex-1 flex items-center justify-center p-10">
@@ -605,7 +605,7 @@ function MaterialPage() {
       </main>
 
       {material && (
-        <div className="max-w-container-max mx-auto px-margin pb-gutter space-y-gutter">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin pb-gutter space-y-gutter">
           <AppealPanel material={material} />
           <MaterialComments materialId={material.id} />
           {modLogQ.data && modLogQ.data.length > 0 && (

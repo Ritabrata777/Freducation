@@ -103,8 +103,8 @@ function MyListPage() {
   return (
     <div className="text-on-background font-body-md antialiased min-h-screen">
       <TopNav />
-      <main className="pt-28 pb-margin">
-        <div className="max-w-container-max mx-auto px-margin">
+      <main className="pt-36 lg:pt-28 pb-margin">
+        <div className="max-w-container-max mx-auto px-4 sm:px-margin">
           <div className="mb-gutter">
             <h1 className="font-headline-lg text-headline-lg text-on-background">My List</h1>
             <p className="font-body-md text-secondary mt-1">
